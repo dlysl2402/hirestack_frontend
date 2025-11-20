@@ -1,38 +1,12 @@
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export default function Dashboard() {
-  const { user, organization, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/auth/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  const { user, organization } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with more contrast */}
-      <div className="border-b bg-card shadow-sm">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-foreground">HireStack</h1>
-            <Separator orientation="vertical" className="h-6" />
-            <span className="text-sm font-medium text-muted-foreground">{organization?.name}</span>
-          </div>
-          <Button variant="outline" onClick={handleLogout} className="font-medium">
-            Logout
-          </Button>
-        </div>
-      </div>
-
+    <div className="min-h-full bg-background">
       {/* Main Content */}
       <div className="container py-8 px-4">
         <div className="mb-8">
@@ -133,7 +107,7 @@ export default function Dashboard() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">✓</span>
-                  <span className="text-foreground font-medium">Beautiful UI with high-contrast design</span>
+                  <span className="text-foreground font-medium">Beautiful UI with sidebar navigation</span>
                 </li>
               </ul>
               <Separator />
