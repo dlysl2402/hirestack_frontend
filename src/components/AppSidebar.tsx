@@ -6,6 +6,8 @@ import {
   GlobeIcon,
   ReaderIcon,
   ExitIcon,
+  PlusIcon,
+  DownloadIcon,
 } from '@radix-ui/react-icons';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import type { IconProps } from '@radix-ui/react-icons/dist/types';
@@ -30,9 +32,16 @@ const navigation: NavigationSection[] = [
     ],
   },
   {
-    title: 'Recruitment',
+    title: 'Candidates',
     items: [
-      { name: 'Candidates', href: '/candidates', icon: PersonIcon, badge: 'Soon' },
+      { name: 'All Candidates', href: '/candidates', icon: PersonIcon },
+      { name: 'Create Candidate', href: '/candidates/create', icon: PlusIcon },
+      { name: 'Import from LinkedIn', href: '/candidates/import', icon: DownloadIcon },
+    ],
+  },
+  {
+    title: 'Settings',
+    items: [
       { name: 'Organizations', href: '/organizations', icon: GlobeIcon, badge: 'Soon' },
     ],
   },

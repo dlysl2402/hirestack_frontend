@@ -1,40 +1,43 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    /* More contrast with dark grays */
-    --background: 0 0% 98%;
-    --foreground: 222.2 47% 11%;
+@theme {
+  /* Sophisticated Monochrome Palette - Linear/Vercel inspired */
+  /* Warm-tinted grays only. No colors. Depth through opacity and shadows. */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47% 11%;
+  /* Foundation: Warm-tinted grays */
+  --color-background: oklch(98% 0.005 60);           /* Very light warm gray */
+  --color-foreground: oklch(15% 0.01 240);           /* Very dark charcoal */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47% 11%;
+  --color-card: oklch(100% 0 0);                     /* Pure white - maximum contrast */
+  --color-card-foreground: oklch(15% 0.01 240);      /* Dark charcoal on white */
 
-    /* Darker primary for more contrast */
-    --primary: 222.2 47% 11%;
-    --primary-foreground: 210 40% 98%;
+  --color-popover: oklch(100% 0 0);                  /* Pure white */
+  --color-popover-foreground: oklch(15% 0.01 240);   /* Dark charcoal */
 
-    /* Darker secondary */
-    --secondary: 210 40% 94%;
-    --secondary-foreground: 222.2 47% 11%;
+  /* Action: Deep slate gray (monochrome) */
+  --color-primary: oklch(28% 0.015 240);             /* Deep slate - not black */
+  --color-primary-foreground: oklch(100% 0 0);       /* White text */
 
-    /* Darker muted grays */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 19% 35%;
+  /* Secondary: Light gray */
+  --color-secondary: oklch(92% 0.005 60);            /* Light warm gray */
+  --color-secondary-foreground: oklch(15% 0.01 240); /* Dark text */
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47% 11%;
+  /* Muted: Subtle gray tones */
+  --color-muted: oklch(92% 0.005 60);                /* Light warm gray */
+  --color-muted-foreground: oklch(52% 0.005 60);     /* Medium gray text */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+  /* Accent: Same as primary (no separate color) */
+  --color-accent: oklch(28% 0.015 240);              /* Same deep slate */
+  --color-accent-foreground: oklch(100% 0 0);        /* White text */
 
-    /* Darker borders for more definition */
-    --border: 214.3 31.8% 85%;
-    --input: 214.3 31.8% 87%;
-    --ring: 222.2 47% 11%;
+  /* Destructive: Even darker gray */
+  --color-destructive: oklch(22% 0.015 240);         /* Darker than primary */
+  --color-destructive-foreground: oklch(100% 0 0);   /* White text */
 
-    --radius: 0.5rem;
-  }
+  /* Borders & inputs: Warm light grays */
+  --color-border: oklch(88% 0.005 60);               /* Warm medium-light gray */
+  --color-input: oklch(94% 0.005 60);                /* Slightly darker */
+  --color-ring: oklch(28% 0.015 240);                /* Dark slate focus ring */
+
+  --radius: 0.125rem;                                 /* 2px - sharp, minimal */
 }
