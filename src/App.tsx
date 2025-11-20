@@ -9,6 +9,7 @@ import Candidates from '@/pages/Candidates';
 import CandidateCreate from '@/pages/CandidateCreate';
 import CandidateImport from '@/pages/CandidateImport';
 import CandidateDetail from '@/pages/CandidateDetail';
+import CandidateEdit from '@/pages/CandidateEdit';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/candidates" element={<Candidates />} />
                     <Route path="/candidates/create" element={<CandidateCreate />} />
                     <Route path="/candidates/import" element={<CandidateImport />} />
+                    <Route path="/candidates/:id/edit" element={<CandidateEdit />} />
                     <Route path="/candidates/:id" element={<CandidateDetail />} />
                     <Route path="/organizations" element={<div className="p-8"><h1 className="text-2xl font-bold">Organizations - Coming Soon</h1></div>} />
                     <Route path="*" element={<Navigate to="/" replace />} />

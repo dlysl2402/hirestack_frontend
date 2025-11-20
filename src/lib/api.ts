@@ -35,6 +35,11 @@ export async function apiRequest<T>(
     throw new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`);
   }
 
+  // Handle 204 No Content (no body to parse)
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json();
 }
 
@@ -199,6 +204,11 @@ export async function authenticatedRequest<T>(
     }
 
     throw new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`);
+  }
+
+  // Handle 204 No Content (no body to parse)
+  if (response.status === 204) {
+    return undefined as T;
   }
 
   return response.json();

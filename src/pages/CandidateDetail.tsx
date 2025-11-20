@@ -109,10 +109,12 @@ export default function CandidateDetail() {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="secondary" size="default" disabled>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
+              <Link to={`/candidates/${id}/edit`}>
+                <Button variant="secondary" size="default">
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              </Link>
               <Button
                 variant="destructive"
                 size="default"
