@@ -2,10 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getCandidateById, deleteCandidate } from '@/candidates/candidate.service';
 import type { Candidate } from '@/candidates/candidate.types';
+import { selectBestProfile, getSourceBadge } from '@/candidates/candidate.utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { ProfileHeader } from '@/components/profile/ProfileHeader';
+import { ExperienceSection } from '@/components/profile/ExperienceSection';
+import { EducationSection } from '@/components/profile/EducationSection';
+import { SkillsSection } from '@/components/profile/SkillsSection';
+import { CertificationsSection } from '@/components/profile/CertificationsSection';
+import { ProjectsSection } from '@/components/profile/ProjectsSection';
 
 export default function CandidateDetail() {
   const { id } = useParams<{ id: string }>();
@@ -88,6 +95,10 @@ export default function CandidateDetail() {
     );
   }
 
+  // Select best profile (Resume > LinkedIn > Manual)
+  const { profile, source } = selectBestProfile(candidate);
+  const sourceBadge = source ? getSourceBadge(source) : null;
+
   return (
     <div className="min-h-full bg-background">
       <div className="container max-w-4xl py-8 px-4">
@@ -101,9 +112,16 @@ export default function CandidateDetail() {
           </Link>
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                {candidate.firstName} {candidate.lastName}
-              </h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                  {candidate.firstName} {candidate.lastName}
+                </h1>
+                {sourceBadge && (
+                  <Badge variant={sourceBadge.variant} className="text-xs">
+                    {sourceBadge.label}
+                  </Badge>
+                )}
+              </div>
               <p className="text-muted-foreground font-medium">
                 Added {new Date(candidate.createdAt).toLocaleDateString()}
               </p>
@@ -137,75 +155,89 @@ export default function CandidateDetail() {
           </div>
         </div>
 
-        {/* Basic Information */}
-        <Card className="shadow-md">
-          <CardContent className="pt-6 space-y-6">
-            {/* Emails */}
-            {candidate.email.length > 0 && (
-              <div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Email
+        <div className="space-y-6">
+          {/* Contact Information */}
+          <Card className="shadow-md">
+            <CardContent className="pt-6 space-y-6">
+              {/* Emails */}
+              {candidate.email.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Email
+                  </div>
+                  <div className="space-y-1">
+                    {candidate.email.map((email, index) => (
+                      <div key={index}>
+                        <a
+                          href={`mailto:${email}`}
+                          className="text-sm hover:underline text-foreground"
+                        >
+                          {email}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  {candidate.email.map((email, index) => (
-                    <div key={index}>
-                      <a
-                        href={`mailto:${email}`}
-                        className="text-sm hover:underline text-foreground"
-                      >
-                        {email}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Phones */}
-            {candidate.phone.length > 0 && (
-              <div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Phone
+              {/* Phones */}
+              {candidate.phone.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Phone
+                  </div>
+                  <div className="space-y-1">
+                    {candidate.phone.map((phone, index) => (
+                      <div key={index}>
+                        <a
+                          href={`tel:${phone}`}
+                          className="text-sm hover:underline text-foreground"
+                        >
+                          {phone}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  {candidate.phone.map((phone, index) => (
-                    <div key={index}>
-                      <a
-                        href={`tel:${phone}`}
-                        className="text-sm hover:underline text-foreground"
-                      >
-                        {phone}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Job Function Tags */}
-            {candidate.jobFunctionTags.length > 0 && (
-              <div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Job Functions
+              {/* Job Function Tags */}
+              {candidate.jobFunctionTags.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Job Functions
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {candidate.jobFunctionTags.map((tag, index) => (
+                      <Badge key={index} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {candidate.jobFunctionTags.map((tag, index) => (
-                    <Badge key={index} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Empty State */}
-            {candidate.email.length === 0 && candidate.phone.length === 0 && candidate.jobFunctionTags.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground text-sm">
-                No contact information or job functions specified
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              {/* Empty State */}
+              {candidate.email.length === 0 && candidate.phone.length === 0 && candidate.jobFunctionTags.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  No contact information or job functions specified
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Profile Sections (only if profile exists) */}
+          {profile && (
+            <>
+              <ProfileHeader profile={profile} />
+              <ExperienceSection experiences={profile.experience} />
+              <EducationSection educations={profile.education} />
+              <SkillsSection skills={profile.skills} showEndorsements={source === 'LINKEDIN'} />
+              <CertificationsSection certifications={profile.certifications} />
+              <ProjectsSection projects={profile.projects} />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
