@@ -134,24 +134,24 @@ export default function CandidateImport() {
                 {/* Summary */}
                 <div className="flex gap-4 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-foreground" />
                     <span className="text-sm">
-                      <span className="font-semibold text-green-600">{successCount}</span> imported successfully
+                      <span className="font-semibold text-foreground">{successCount}</span> imported successfully
                     </span>
                   </div>
                   {skippedCount > 0 && (
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-blue-600" />
+                      <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">
-                        <span className="font-semibold text-blue-600">{skippedCount}</span> skipped
+                        <span className="font-semibold text-muted-foreground">{skippedCount}</span> skipped
                       </span>
                     </div>
                   )}
                   {failedCount > 0 && (
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <AlertCircle className="h-4 w-4 text-destructive" />
                       <span className="text-sm">
-                        <span className="font-semibold text-red-600">{failedCount}</span> failed
+                        <span className="font-semibold text-destructive">{failedCount}</span> failed
                       </span>
                     </div>
                   )}
@@ -162,7 +162,7 @@ export default function CandidateImport() {
                 {/* Successful Imports */}
                 {successCount > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-green-600 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <CheckCircle className="h-4 w-4" />
                       Successfully Imported ({successCount})
                     </h3>
@@ -170,19 +170,19 @@ export default function CandidateImport() {
                       {importResults.success.map((result) => (
                         <div
                           key={result.candidateId}
-                          className="p-4 border rounded-lg bg-green-50 border-green-200"
+                          className="p-4 border rounded-lg bg-card border-border"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                <CheckCircle className="h-5 w-5 text-foreground flex-shrink-0" />
                                 <Link
                                   to={`/candidates/${result.candidateId}`}
                                   className="font-semibold text-foreground hover:underline"
                                 >
                                   {result.firstName} {result.lastName}
                                 </Link>
-                                <Badge className="bg-green-600 hover:bg-green-700">Created</Badge>
+                                <Badge>Created</Badge>
                               </div>
                               {result.currentTitle && (
                                 <p className="text-sm text-muted-foreground">
@@ -194,7 +194,7 @@ export default function CandidateImport() {
                                 href={result.linkedinUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1"
+                                className="text-xs text-muted-foreground hover:underline flex items-center gap-1 mt-1"
                               >
                                 {result.linkedinUrl}
                                 <ExternalLink className="h-3 w-3" />
@@ -210,7 +210,7 @@ export default function CandidateImport() {
                 {/* Skipped Imports */}
                 {skippedCount > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-blue-600 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4" />
                       Skipped ({skippedCount})
                     </h3>
@@ -218,20 +218,20 @@ export default function CandidateImport() {
                       {importResults.skipped.map((result, index) => (
                         <div
                           key={index}
-                          className="p-4 border rounded-lg bg-blue-50 border-blue-200"
+                          className="p-4 border rounded-lg bg-muted/50 border-muted"
                         >
                           <div className="flex items-start gap-3">
-                            <AlertTriangle className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <AlertTriangle className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <Badge className="bg-blue-100 text-blue-800 border-blue-300">Skipped</Badge>
+                                <Badge variant="secondary">Skipped</Badge>
                               </div>
                               <p className="text-sm text-muted-foreground mb-1">{result.reason}</p>
                               <a
                                 href={result.linkedinUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline flex items-center gap-1 break-all"
+                                className="text-xs text-muted-foreground hover:underline flex items-center gap-1 break-all"
                               >
                                 {result.linkedinUrl}
                                 <ExternalLink className="h-3 w-3 flex-shrink-0" />
@@ -247,7 +247,7 @@ export default function CandidateImport() {
                 {/* Failed Imports */}
                 {failedCount > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-red-600 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-destructive flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       Failed ({failedCount})
                     </h3>
@@ -255,20 +255,20 @@ export default function CandidateImport() {
                       {importResults.failed.map((result, index) => (
                         <div
                           key={index}
-                          className="p-4 border rounded-lg bg-red-50 border-red-200"
+                          className="p-4 border rounded-lg bg-destructive/5 border-destructive"
                         >
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <Badge className="bg-red-100 text-red-800 border-red-300">Error</Badge>
+                                <Badge variant="destructive">Error</Badge>
                               </div>
                               <p className="text-sm text-muted-foreground mb-1">{result.reason}</p>
                               <a
                                 href={result.linkedinUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline flex items-center gap-1 break-all"
+                                className="text-xs text-muted-foreground hover:underline flex items-center gap-1 break-all"
                               >
                                 {result.linkedinUrl}
                                 <ExternalLink className="h-3 w-3 flex-shrink-0" />
