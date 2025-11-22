@@ -9,6 +9,7 @@ import {
   ExitIcon,
   PlusIcon,
   DownloadIcon,
+  DesktopIcon,
 } from '@radix-ui/react-icons';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import type { IconProps } from '@radix-ui/react-icons/dist/types';
@@ -38,6 +39,13 @@ const navigation: NavigationSection[] = [
       { name: 'All Candidates', href: '/candidates', icon: PersonIcon },
       { name: 'Create Candidate', href: '/candidates/create', icon: PlusIcon },
       { name: 'Import from LinkedIn', href: '/candidates/import', icon: DownloadIcon },
+    ],
+  },
+  {
+    title: 'Companies',
+    items: [
+      { name: 'All Companies', href: '/companies', icon: DesktopIcon },
+      { name: 'Create Company', href: '/companies/create', icon: PlusIcon },
     ],
   },
   {
