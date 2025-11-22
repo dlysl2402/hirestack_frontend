@@ -4,6 +4,8 @@ import type {
   CreateCandidateData,
   UpdateCandidateData,
   LinkedInImportResults,
+  PaginationParams,
+  PaginatedResponse,
 } from './candidate.types';
 
 /**
@@ -11,10 +13,28 @@ import type {
  */
 
 /**
- * Get all candidates for the user's organization
+ * Get all candidates for the user's organization with pagination
  */
-export async function getAllCandidates(): Promise<Candidate[]> {
-  return authenticatedRequest<Candidate[]>('/api/candidates');
+export async function getAllCandidates(params?: PaginationParams): Promise<PaginatedResponse<Candidate>> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+  if (params?.sortBy) {
+    queryParams.append('sortBy', params.sortBy);
+  }
+  if (params?.sortOrder) {
+    queryParams.append('sortOrder', params.sortOrder);
+  }
+
+  const queryString = queryParams.toString();
+  const url = queryString ? `/api/candidates?${queryString}` : '/api/candidates';
+
+  return authenticatedRequest<PaginatedResponse<Candidate>>(url);
 }
 
 /**

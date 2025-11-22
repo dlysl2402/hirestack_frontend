@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getAllCandidates } from '@/candidates/candidate.service';
-import type { Candidate } from '@/candidates/candidate.types';
+import type { Candidate, SortBy, SortOrder } from '@/candidates/candidate.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,19 +13,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { PaginationControls } from '@/components/ui/pagination';
 import { Loader2, Plus, Upload } from 'lucide-react';
 
 export default function Candidates() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Pagination state from URL params
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '20', 10);
+  const sortBy = (searchParams.get('sortBy') || 'createdAt') as SortBy;
+  const sortOrder = (searchParams.get('sortOrder') || 'desc') as SortOrder;
+
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
         setLoading(true);
-        const data = await getAllCandidates();
-        setCandidates(data);
+        const response = await getAllCandidates({ page, limit, sortBy, sortOrder });
+        setCandidates(response.data);
+        setTotalPages(response.pagination.totalPages);
+        setTotalItems(response.pagination.total);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load candidates');
       } finally {
@@ -34,7 +47,25 @@ export default function Candidates() {
     };
 
     fetchCandidates();
-  }, []);
+  }, [page, limit, sortBy, sortOrder]);
+
+  const handlePageChange = (newPage: number) => {
+    setSearchParams({
+      page: newPage.toString(),
+      limit: limit.toString(),
+      sortBy,
+      sortOrder,
+    });
+  };
+
+  const handleItemsPerPageChange = (newLimit: number) => {
+    setSearchParams({
+      page: '1', // Reset to first page when changing limit
+      limit: newLimit.toString(),
+      sortBy,
+      sortOrder,
+    });
+  };
 
   if (loading) {
     return (
@@ -70,7 +101,7 @@ export default function Candidates() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Candidates</h1>
             <p className="text-muted-foreground font-medium">
-              {candidates.length} {candidates.length === 1 ? 'candidate' : 'candidates'} in your organization
+              {totalItems} {totalItems === 1 ? 'candidate' : 'candidates'} in your organization
             </p>
           </div>
           <div className="flex gap-3">
@@ -90,7 +121,7 @@ export default function Candidates() {
         </div>
 
         {/* Empty State */}
-        {candidates.length === 0 ? (
+        {totalItems === 0 ? (
           <Card className="shadow-md">
             <CardHeader>
               <CardTitle>No candidates yet</CardTitle>
@@ -184,6 +215,19 @@ export default function Candidates() {
                 ))}
               </TableBody>
             </Table>
+
+            {/* Pagination Controls */}
+            <div className="px-4">
+              <PaginationControls
+                currentPage={page}
+                totalPages={totalPages}
+                itemsPerPage={limit}
+                totalItems={totalItems}
+                onPageChange={handlePageChange}
+                onItemsPerPageChange={handleItemsPerPageChange}
+                itemLabel="candidates"
+              />
+            </div>
           </Card>
         )}
       </div>

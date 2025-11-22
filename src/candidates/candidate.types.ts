@@ -157,3 +157,26 @@ export interface LinkedInImportResults {
   skipped: LinkedInImportSkipped[];
   failed: LinkedInImportFailed[];
 }
+
+// Pagination types
+export type SortBy = 'createdAt' | 'firstName' | 'lastName' | 'updatedAt';
+export type SortOrder = 'asc' | 'desc';
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sortBy?: SortBy;
+  sortOrder?: SortOrder;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
