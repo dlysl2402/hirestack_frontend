@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -53,7 +54,7 @@ interface AppSidebarProps {
   organizationName?: string;
 }
 
-export function AppSidebar({ onLogout, userName, organizationName }: AppSidebarProps) {
+export const AppSidebar = React.memo(function AppSidebar({ onLogout, userName, organizationName }: AppSidebarProps) {
   const location = useLocation();
 
   return (
@@ -122,4 +123,4 @@ export function AppSidebar({ onLogout, userName, organizationName }: AppSidebarP
       </div>
     </div>
   );
-}
+});

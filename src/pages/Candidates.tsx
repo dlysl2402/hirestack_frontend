@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getAllCandidates } from '@/candidates/candidate.service';
-import type { Candidate, SortBy, SortOrder } from '@/candidates/candidate.types';
+import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, Candidate } from '@/candidates/candidate.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,12 +15,11 @@ import {
 } from '@/components/ui/table';
 import { PaginationControls } from '@/components/ui/pagination';
 import { Loader2, Plus, Upload } from 'lucide-react';
+import { usePaginatedQuery } from '@/hooks/usePaginatedQuery';
+import { queryKeys } from '@/lib/query-keys';
 
 export default function Candidates() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Pagination state from URL params
   const page = parseInt(searchParams.get('page') || '1', 10);
@@ -28,46 +27,51 @@ export default function Candidates() {
   const sortBy = (searchParams.get('sortBy') || 'createdAt') as SortBy;
   const sortOrder = (searchParams.get('sortOrder') || 'desc') as SortOrder;
 
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
+  // Memoize pagination params to prevent unnecessary re-renders
+  const paginationParams = useMemo(
+    () => ({ page, limit, sortBy, sortOrder }),
+    [page, limit, sortBy, sortOrder]
+  );
 
-  useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        setLoading(true);
-        const response = await getAllCandidates({ page, limit, sortBy, sortOrder });
-        setCandidates(response.data);
-        setTotalPages(response.pagination.totalPages);
-        setTotalItems(response.pagination.total);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load candidates');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Use paginated query with automatic prefetching
+  const { data, isLoading, error } = usePaginatedQuery<PaginatedResponse<Candidate>, PaginationParams>({
+    queryKey: queryKeys.candidates.list(paginationParams),
+    queryFn: () => getAllCandidates(paginationParams),
+    queryFnGenerator: (params: PaginationParams) => () => getAllCandidates(params),
+    page,
+    getTotalPages: (data) => data?.pagination?.totalPages ?? 0,
+  });
 
-    fetchCandidates();
-  }, [page, limit, sortBy, sortOrder]);
+  const candidates = data?.data ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 0;
+  const totalItems = data?.pagination?.total ?? 0;
 
-  const handlePageChange = (newPage: number) => {
-    setSearchParams({
-      page: newPage.toString(),
-      limit: limit.toString(),
-      sortBy,
-      sortOrder,
-    });
-  };
+  // Memoize handlers to prevent unnecessary re-renders
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setSearchParams({
+        page: newPage.toString(),
+        limit: limit.toString(),
+        sortBy,
+        sortOrder,
+      });
+    },
+    [limit, sortBy, sortOrder, setSearchParams]
+  );
 
-  const handleItemsPerPageChange = (newLimit: number) => {
-    setSearchParams({
-      page: '1', // Reset to first page when changing limit
-      limit: newLimit.toString(),
-      sortBy,
-      sortOrder,
-    });
-  };
+  const handleItemsPerPageChange = useCallback(
+    (newLimit: number) => {
+      setSearchParams({
+        page: '1', // Reset to first page when changing limit
+        limit: newLimit.toString(),
+        sortBy,
+        sortOrder,
+      });
+    },
+    [sortBy, sortOrder, setSearchParams]
+  );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-full bg-background">
         <div className="container py-8 px-4">
@@ -85,7 +89,9 @@ export default function Candidates() {
         <div className="container py-8 px-4">
           <Card className="border-destructive">
             <CardContent className="pt-6">
-              <p className="text-destructive font-medium">{error}</p>
+              <p className="text-destructive font-medium">
+                {error instanceof Error ? error.message : 'Failed to load candidates'}
+              </p>
             </CardContent>
           </Card>
         </div>

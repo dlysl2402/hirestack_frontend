@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query-client';
 import { AuthProvider } from '@/auth/AuthContext';
 import { ProtectedRoute } from '@/auth/ProtectedRoute';
 import { Layout } from '@/components/Layout';
@@ -13,8 +15,9 @@ import CandidateEdit from '@/pages/CandidateEdit';
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
         <Routes>
           {/* Public auth routes */}
           <Route path="/auth/login" element={<Login />} />
@@ -43,6 +46,7 @@ function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

@@ -14,7 +14,7 @@ export interface PaginationControlsProps {
   itemLabel?: string;
 }
 
-export function PaginationControls({
+export const PaginationControls = React.memo(function PaginationControls({
   currentPage,
   totalPages,
   itemsPerPage,
@@ -93,4 +93,4 @@ export function PaginationControls({
       </div>
     </div>
   );
-}
+});
