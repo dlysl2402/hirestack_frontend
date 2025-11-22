@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCandidateById, deleteCandidate } from '@/candidates/candidate.service';
-import type { Candidate } from '@/candidates/candidate.types';
 import { selectBestProfile, getSourceBadge } from '@/candidates/candidate.utils';
+import { queryKeys } from '@/lib/query-keys';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,32 +18,19 @@ import { ProjectsSection } from '@/components/profile/ProjectsSection';
 export default function CandidateDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [candidate, setCandidate] = useState<Candidate | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCandidate = async () => {
-      if (!id) {
-        setError('No candidate ID provided');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const data = await getCandidateById(id);
-        setCandidate(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load candidate');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCandidate();
-  }, [id]);
+  // Use React Query for candidate fetching (cache-aware)
+  const {
+    data: candidate,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: queryKeys.candidates.detail(id!),
+    queryFn: () => getCandidateById(id!),
+    enabled: !!id,
+  });
 
   const handleDelete = async () => {
     if (!id || !candidate) return;
@@ -56,14 +44,16 @@ export default function CandidateDetail() {
     try {
       setDeleting(true);
       await deleteCandidate(id);
+      // Invalidate candidate list cache to reflect deletion
+      queryClient.invalidateQueries({ queryKey: queryKeys.candidates.lists() });
       navigate('/candidates');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete candidate');
+      console.error('Failed to delete candidate:', err);
       setDeleting(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-full bg-background">
         <div className="container py-8 px-4">
@@ -75,13 +65,15 @@ export default function CandidateDetail() {
     );
   }
 
-  if (error || !candidate) {
+  if (error || (!isLoading && !candidate)) {
     return (
       <div className="min-h-full bg-background">
         <div className="container py-8 px-4">
           <Card className="border-destructive">
             <CardContent className="pt-6">
-              <p className="text-destructive font-medium">{error || 'Candidate not found'}</p>
+              <p className="text-destructive font-medium">
+                {error instanceof Error ? error.message : 'Candidate not found'}
+              </p>
               <Link to="/candidates" className="mt-4 inline-block">
                 <Button variant="secondary">
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -93,6 +85,11 @@ export default function CandidateDetail() {
         </div>
       </div>
     );
+  }
+
+  // Ensure candidate is loaded before rendering
+  if (!candidate) {
+    return null;
   }
 
   // Select best profile (Resume > LinkedIn > Manual)

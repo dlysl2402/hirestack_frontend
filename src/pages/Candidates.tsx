@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getAllCandidates } from '@/candidates/candidate.service';
+import { getAllCandidates, getCandidateById } from '@/candidates/candidate.service';
 import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, Candidate } from '@/candidates/candidate.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,72 @@ import {
 import { PaginationControls } from '@/components/ui/pagination';
 import { Loader2, Plus, Upload } from 'lucide-react';
 import { usePaginatedQuery } from '@/hooks/usePaginatedQuery';
+import { useHoverPrefetch } from '@/hooks/useHoverPrefetch';
 import { queryKeys } from '@/lib/query-keys';
+
+/**
+ * CandidateRow component with hover prefetch
+ */
+function CandidateRow({ candidate }: { candidate: Candidate }) {
+  const hoverHandlers = useHoverPrefetch({
+    queryKey: queryKeys.candidates.detail(candidate.id),
+    queryFn: () => getCandidateById(candidate.id),
+  });
+
+  return (
+    <TableRow key={candidate.id} {...hoverHandlers}>
+      <TableCell className="font-medium">
+        {candidate.firstName} {candidate.lastName}
+      </TableCell>
+      <TableCell>
+        {candidate.email.length > 0 ? (
+          <div className="flex flex-col gap-1">
+            {candidate.email.map((email, index) => (
+              <span key={index} className="text-sm">
+                {email}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {candidate.phone.length > 0 ? (
+          <div className="flex flex-col gap-1">
+            {candidate.phone.map((phone, index) => (
+              <span key={index} className="text-sm">
+                {phone}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {candidate.jobFunctionTags.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {candidate.jobFunctionTags.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
+      </TableCell>
+      <TableCell className="text-right">
+        <Link to={`/candidates/${candidate.id}`}>
+          <Button variant="ghost" size="sm">
+            View
+          </Button>
+        </Link>
+      </TableCell>
+    </TableRow>
+  );
+}
 
 export default function Candidates() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -167,57 +232,7 @@ export default function Candidates() {
               </TableHeader>
               <TableBody>
                 {candidates.map((candidate) => (
-                  <TableRow key={candidate.id}>
-                    <TableCell className="font-medium">
-                      {candidate.firstName} {candidate.lastName}
-                    </TableCell>
-                    <TableCell>
-                      {candidate.email.length > 0 ? (
-                        <div className="flex flex-col gap-1">
-                          {candidate.email.map((email, index) => (
-                            <span key={index} className="text-sm">
-                              {email}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {candidate.phone.length > 0 ? (
-                        <div className="flex flex-col gap-1">
-                          {candidate.phone.map((phone, index) => (
-                            <span key={index} className="text-sm">
-                              {phone}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {candidate.jobFunctionTags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {candidate.jobFunctionTags.map((tag, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link to={`/candidates/${candidate.id}`}>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
+                  <CandidateRow key={candidate.id} candidate={candidate} />
                 ))}
               </TableBody>
             </Table>
