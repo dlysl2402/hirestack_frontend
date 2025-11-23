@@ -19,7 +19,13 @@ export interface CreateCompanyData {
   websiteUrl?: string;       // Optional
 }
 
-// For future use when GET endpoint is available
+export interface CompanyListParams {
+  page?: number;
+  limit?: number;
+  sortBy?: 'name' | 'displayName' | 'industry' | 'createdAt' | 'updatedAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
 export interface PaginationMeta {
   page: number;
   limit: number;

@@ -1,5 +1,27 @@
 import { authenticatedRequest } from '@/lib/api';
-import type { Company, CreateCompanyData } from './company.types';
+import type { Company, CreateCompanyData, CompanyListParams, PaginatedCompaniesResponse } from './company.types';
+
+export const getCompanies = async (params?: CompanyListParams): Promise<PaginatedCompaniesResponse> => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+  if (params?.sortBy) {
+    queryParams.append('sortBy', params.sortBy);
+  }
+  if (params?.sortOrder) {
+    queryParams.append('sortOrder', params.sortOrder);
+  }
+
+  const query = queryParams.toString();
+  const endpoint = query ? `/api/companies?${query}` : '/api/companies';
+
+  return authenticatedRequest<PaginatedCompaniesResponse>(endpoint);
+};
 
 export const createCompany = async (data: CreateCompanyData): Promise<Company> => {
   return authenticatedRequest<Company>('/api/companies', {
@@ -9,11 +31,6 @@ export const createCompany = async (data: CreateCompanyData): Promise<Company> =
 };
 
 // Stubs for future endpoints
-// export const getCompanies = async (params: CompanyListParams): Promise<PaginatedCompaniesResponse> => {
-//   const response = await api.get('/api/companies', { params });
-//   return response.data;
-// };
-
 // export const getCompanyById = async (id: string): Promise<Company> => {
 //   const response = await api.get(`/api/companies/${id}`);
 //   return response.data;
