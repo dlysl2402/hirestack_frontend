@@ -14,6 +14,7 @@ import CandidateDetail from '@/pages/CandidateDetail';
 import CandidateEdit from '@/pages/CandidateEdit';
 import Companies from '@/pages/Companies';
 import CompanyCreate from '@/pages/CompanyCreate';
+import CompanyDetail from '@/pages/CompanyDetail';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                     <Route path="/candidates/:id" element={<CandidateDetail />} />
                     <Route path="/companies" element={<Companies />} />
                     <Route path="/companies/create" element={<CompanyCreate />} />
+                    <Route path="/companies/:id" element={<CompanyDetail />} />
                     <Route path="/organizations" element={<div className="p-8"><h1 className="text-2xl font-bold">Organizations - Coming Soon</h1></div>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
