@@ -19,6 +19,14 @@ export interface CreateCompanyData {
   websiteUrl?: string;       // Optional
 }
 
+export interface UpdateCompanyData {
+  displayName?: string;      // 1-255 chars, trimmed
+  aliases?: string[];        // Array of strings, normalized to lowercase (or [] to clear)
+  industry?: string | null;  // String or null to clear
+  linkedInUrl?: string | null;  // Valid URL or null to clear
+  websiteUrl?: string | null;   // Valid URL or null to clear
+}
+
 export interface CompanyListParams {
   page?: number;
   limit?: number;

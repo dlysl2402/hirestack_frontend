@@ -1,5 +1,5 @@
 import { authenticatedRequest } from '@/lib/api';
-import type { Company, CreateCompanyData, CompanyListParams, PaginatedCompaniesResponse } from './company.types';
+import type { Company, CreateCompanyData, UpdateCompanyData, CompanyListParams, PaginatedCompaniesResponse } from './company.types';
 
 export const getCompanies = async (params?: CompanyListParams): Promise<PaginatedCompaniesResponse> => {
   const queryParams = new URLSearchParams();
@@ -34,12 +34,16 @@ export const createCompany = async (data: CreateCompanyData): Promise<Company> =
   });
 };
 
-// Stubs for future endpoints
-// export const updateCompany = async (id: string, data: UpdateCompanyData): Promise<Company> => {
-//   const response = await api.patch(`/api/companies/${id}`, data);
-//   return response.data;
-// };
+export const updateCompany = async (id: string, data: UpdateCompanyData): Promise<Company> => {
+  return authenticatedRequest<Company>(`/api/companies/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+};
 
+// Stub for future endpoint
 // export const deleteCompany = async (id: string): Promise<void> => {
-//   await api.delete(`/api/companies/${id}`);
+//   await authenticatedRequest<void>(`/api/companies/${id}`, {
+//     method: 'DELETE',
+//   });
 // };

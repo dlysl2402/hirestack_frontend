@@ -96,7 +96,11 @@ export default function CompanyDetail() {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled title="Coming soon">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/companies/${id}/edit`)}
+              >
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
