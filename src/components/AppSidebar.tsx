@@ -10,6 +10,7 @@ import {
   PlusIcon,
   DownloadIcon,
   DesktopIcon,
+  FileTextIcon,
 } from '@radix-ui/react-icons';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import type { IconProps } from '@radix-ui/react-icons/dist/types';
@@ -46,6 +47,13 @@ const navigation: NavigationSection[] = [
     items: [
       { name: 'All Companies', href: '/companies', icon: DesktopIcon },
       { name: 'Create Company', href: '/companies/create', icon: PlusIcon },
+    ],
+  },
+  {
+    title: 'Jobs',
+    items: [
+      { name: 'All Jobs', href: '/jobs', icon: FileTextIcon },
+      { name: 'Create Job', href: '/jobs/create', icon: PlusIcon },
     ],
   },
   {

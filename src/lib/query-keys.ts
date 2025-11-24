@@ -32,6 +32,15 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.companies.details(), id] as const,
   },
 
+  // Job query keys
+  jobs: {
+    all: ['jobs'] as const,
+    lists: () => [...queryKeys.jobs.all, 'list'] as const,
+    list: (params?: Record<string, any>) => [...queryKeys.jobs.lists(), params] as const,
+    details: () => [...queryKeys.jobs.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.jobs.details(), id] as const,
+  },
+
   // Add more resource types here as needed
   // dashboard: { ... },
   // stats: { ... },

@@ -16,6 +16,10 @@ import Companies from '@/pages/Companies';
 import CompanyCreate from '@/pages/CompanyCreate';
 import CompanyEdit from '@/pages/CompanyEdit';
 import CompanyDetail from '@/pages/CompanyDetail';
+import Jobs from '@/pages/Jobs';
+import JobCreate from '@/pages/JobCreate';
+import JobEdit from '@/pages/JobEdit';
+import JobDetail from '@/pages/JobDetail';
 
 function App() {
   return (
@@ -44,6 +48,10 @@ function App() {
                     <Route path="/companies/create" element={<CompanyCreate />} />
                     <Route path="/companies/:id/edit" element={<CompanyEdit />} />
                     <Route path="/companies/:id" element={<CompanyDetail />} />
+                    <Route path="/jobs" element={<Jobs />} />
+                    <Route path="/jobs/create" element={<JobCreate />} />
+                    <Route path="/jobs/:id/edit" element={<JobEdit />} />
+                    <Route path="/jobs/:id" element={<JobDetail />} />
                     <Route path="/organizations" element={<div className="p-8"><h1 className="text-2xl font-bold">Organizations - Coming Soon</h1></div>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
