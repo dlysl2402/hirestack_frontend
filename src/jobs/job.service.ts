@@ -1,5 +1,5 @@
 import { authenticatedRequest } from '@/lib/api';
-import type { Job, CreateJobData, JobListParams, PaginatedJobsResponse } from './job.types';
+import type { Job, CreateJobData, UpdateJobData, JobListParams, PaginatedJobsResponse } from './job.types';
 
 export const getJobs = async (params?: JobListParams): Promise<PaginatedJobsResponse> => {
   const queryParams = new URLSearchParams();
@@ -48,6 +48,13 @@ export const getJobs = async (params?: JobListParams): Promise<PaginatedJobsResp
 
 export const getJobById = async (id: string): Promise<Job> => {
   return authenticatedRequest<Job>(`/api/jobs/${id}`);
+};
+
+export const updateJob = async (id: string, data: UpdateJobData): Promise<Job> => {
+  return authenticatedRequest<Job>(`/api/jobs/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
 };
 
 export const createJob = async (data: CreateJobData): Promise<Job> => {

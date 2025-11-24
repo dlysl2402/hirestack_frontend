@@ -40,6 +40,21 @@ export interface CreateJobData {
   requiredCandidateTags?: string[];
 }
 
+// Update job data (API request) - all fields optional
+export interface UpdateJobData {
+  companyId?: string;
+  title?: string;
+  department?: string;
+  location?: string;
+  status?: JobStatus;
+  responsibilities?: string;
+  requiredSkills?: string;
+  preferredSkills?: string | null;  // String or null to clear
+  seniorityLevel?: SeniorityLevel;
+  teamDescription?: string | null;  // String or null to clear
+  requiredCandidateTags?: string[];  // Replaces entire array
+}
+
 // Job list query parameters (pagination + sorting + filters)
 export interface JobListParams {
   // Pagination
