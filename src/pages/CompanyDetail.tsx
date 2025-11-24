@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getCompanyById } from '@/companies/company.service';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getCompanyById, deleteCompany } from '@/companies/company.service';
 import { queryKeys } from '@/lib/query-keys';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Pencil, Trash2, Building2, Briefcase, Linkedin, Globe } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Loader2, ArrowLeft, Pencil, Trash2, Building2, Briefcase, Linkedin, Globe, AlertCircle, AlertTriangle } from 'lucide-react';
 
 export default function CompanyDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // Delete dialog state
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Fetch company data
   const {
@@ -21,6 +29,40 @@ export default function CompanyDetail() {
     queryFn: () => getCompanyById(id!),
     enabled: !!id,
   });
+
+  // Delete handler
+  const handleDelete = async () => {
+    if (!id) return;
+
+    setDeleteError(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteCompany(id);
+
+      // Invalidate cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.companies.lists() });
+      queryClient.removeQueries({ queryKey: queryKeys.companies.detail(id) });
+
+      // Navigate to list
+      navigate('/companies');
+    } catch (err: any) {
+      // Error handling
+      if (err.response?.status === 403) {
+        setDeleteError("You don't have permission to delete this company");
+      } else if (err.response?.status === 404) {
+        setDeleteError('Company not found or already deleted');
+      } else if (err.response?.status === 400) {
+        setDeleteError('Invalid request');
+      } else if (err.response?.status === 401) {
+        setDeleteError('Authentication required');
+      } else {
+        setDeleteError('Failed to delete company. Please try again.');
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Loading state
   if (isLoading) {
@@ -104,7 +146,11 @@ export default function CompanyDetail() {
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="outline" size="sm" disabled title="Coming soon">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </Button>
@@ -178,6 +224,78 @@ export default function CompanyDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Company</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete <strong>{company.displayName}</strong>?
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              {/* Warning */}
+              <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-destructive">
+                    This action is permanent and cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    Employee experiences will be preserved, but the company reference will be removed.
+                  </p>
+                </div>
+              </div>
+
+              {/* Error display */}
+              {deleteError && (
+                <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive rounded-md">
+                  <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                  <p className="text-sm font-medium text-destructive">{deleteError}</p>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsDeleteDialogOpen(false);
+                  setDeleteError(null);
+                }}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Company
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

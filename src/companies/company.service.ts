@@ -41,9 +41,8 @@ export const updateCompany = async (id: string, data: UpdateCompanyData): Promis
   });
 };
 
-// Stub for future endpoint
-// export const deleteCompany = async (id: string): Promise<void> => {
-//   await authenticatedRequest<void>(`/api/companies/${id}`, {
-//     method: 'DELETE',
-//   });
-// };
+export const deleteCompany = async (id: string): Promise<void> => {
+  await authenticatedRequest<void>(`/api/companies/${id}`, {
+    method: 'DELETE',
+  });
+};
