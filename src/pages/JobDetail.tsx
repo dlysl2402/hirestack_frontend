@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getJobById } from '@/jobs/job.service';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getJobById, deleteJob } from '@/jobs/job.service';
 import { getCompanyById } from '@/companies/company.service';
 import type { JobStatus, SeniorityLevel } from '@/jobs/job.types';
 import { queryKeys } from '@/lib/query-keys';
@@ -60,6 +60,7 @@ function SeniorityBadge({ level }: { level: SeniorityLevel }) {
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Delete dialog state
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -85,7 +86,7 @@ export default function JobDetail() {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Delete handler (skeleton for future implementation)
+  // Delete handler
   const handleDelete = async () => {
     if (!id) return;
 
@@ -93,18 +94,27 @@ export default function JobDetail() {
     setIsDeleting(true);
 
     try {
-      // TODO: Implement DELETE /api/jobs/:id in next phase
-      console.log('Delete functionality coming soon for job:', id);
+      await deleteJob(id);
 
-      // Placeholder for future implementation:
-      // await deleteJob(id);
-      // queryClient.invalidateQueries({ queryKey: queryKeys.jobs.lists() });
-      // queryClient.removeQueries({ queryKey: queryKeys.jobs.detail(id) });
-      // navigate('/jobs');
+      // Invalidate cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.jobs.lists() });
+      queryClient.removeQueries({ queryKey: queryKeys.jobs.detail(id) });
 
-      setDeleteError('Delete functionality will be implemented in the next phase');
+      // Navigate to jobs list
+      navigate('/jobs');
     } catch (err: any) {
-      setDeleteError('Failed to delete job. Please try again.');
+      // Error handling
+      if (err.response?.status === 403) {
+        setDeleteError("You don't have permission to delete this job");
+      } else if (err.response?.status === 404) {
+        setDeleteError('Job not found or already deleted');
+      } else if (err.response?.status === 400) {
+        setDeleteError('Invalid request');
+      } else if (err.response?.status === 401) {
+        setDeleteError('Authentication required');
+      } else {
+        setDeleteError('Failed to delete job. Please try again.');
+      }
     } finally {
       setIsDeleting(false);
     }

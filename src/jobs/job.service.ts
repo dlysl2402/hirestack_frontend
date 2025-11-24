@@ -57,6 +57,12 @@ export const updateJob = async (id: string, data: UpdateJobData): Promise<Job> =
   });
 };
 
+export const deleteJob = async (id: string): Promise<void> => {
+  await authenticatedRequest<void>(`/api/jobs/${id}`, {
+    method: 'DELETE',
+  });
+};
+
 export const createJob = async (data: CreateJobData): Promise<Job> => {
   return authenticatedRequest<Job>('/api/jobs', {
     method: 'POST',
