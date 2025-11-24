@@ -46,6 +46,10 @@ export const getJobs = async (params?: JobListParams): Promise<PaginatedJobsResp
   return authenticatedRequest<PaginatedJobsResponse>(endpoint);
 };
 
+export const getJobById = async (id: string): Promise<Job> => {
+  return authenticatedRequest<Job>(`/api/jobs/${id}`);
+};
+
 export const createJob = async (data: CreateJobData): Promise<Job> => {
   return authenticatedRequest<Job>('/api/jobs', {
     method: 'POST',
