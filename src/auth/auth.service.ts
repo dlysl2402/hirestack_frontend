@@ -65,6 +65,31 @@ export function isTokenExpired(token: string): boolean {
 }
 
 /**
+ * Check if JWT is close to expiry (within buffer time)
+ * Used for proactive token refresh
+ */
+export function isTokenCloseToExpiry(token: string, bufferMinutes: number = 5): boolean {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+
+    const payload: JWTPayload = JSON.parse(jsonPayload);
+    const currentTime = Math.floor(Date.now() / 1000);
+    const bufferSeconds = bufferMinutes * 60;
+
+    return payload.exp < (currentTime + bufferSeconds);
+  } catch (error) {
+    return true; // Treat invalid tokens as close to expiry
+  }
+}
+
+/**
  * Auth service - API calls for authentication
  */
 export const authService = {

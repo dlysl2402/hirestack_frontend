@@ -4,6 +4,7 @@
  * Strategy:
  * - Access token: sessionStorage (survives refresh, cleared on browser close)
  * - Refresh token: localStorage (persists across sessions)
+ * - Organization: localStorage (persists across sessions for UI display)
  *
  * Benefits:
  * - XSS mitigation (shorter-lived access token exposure)
@@ -13,6 +14,7 @@
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+const ORGANIZATION_KEY = 'organization';
 
 export const tokenStorage = {
   /**
@@ -58,11 +60,12 @@ export const tokenStorage = {
   },
 
   /**
-   * Clear all tokens (logout)
+   * Clear all tokens and organization (logout)
    */
   clearTokens(): void {
     this.removeAccessToken();
     this.removeRefreshToken();
+    this.removeOrganization();
   },
 
   /**
@@ -71,5 +74,27 @@ export const tokenStorage = {
   setTokens(accessToken: string, refreshToken: string): void {
     this.setAccessToken(accessToken);
     this.setRefreshToken(refreshToken);
+  },
+
+  /**
+   * Get organization from local storage
+   */
+  getOrganization(): any | null {
+    const stored = localStorage.getItem(ORGANIZATION_KEY);
+    return stored ? JSON.parse(stored) : null;
+  },
+
+  /**
+   * Store organization in local storage
+   */
+  setOrganization(organization: any): void {
+    localStorage.setItem(ORGANIZATION_KEY, JSON.stringify(organization));
+  },
+
+  /**
+   * Remove organization from local storage
+   */
+  removeOrganization(): void {
+    localStorage.removeItem(ORGANIZATION_KEY);
   },
 };
