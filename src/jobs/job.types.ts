@@ -39,3 +39,37 @@ export interface CreateJobData {
   teamDescription?: string;
   requiredCandidateTags?: string[];
 }
+
+// Job list query parameters (pagination + sorting + filters)
+export interface JobListParams {
+  // Pagination
+  page?: number;              // Default: 1
+  limit?: number;             // Default: 20, max: 100
+
+  // Sorting
+  sortBy?: 'title' | 'department' | 'location' | 'status' |
+           'seniorityLevel' | 'createdAt' | 'updatedAt';
+  sortOrder?: 'asc' | 'desc'; // Default: 'desc'
+
+  // Filters (all optional, combine with AND logic)
+  status?: JobStatus;
+  seniorityLevel?: SeniorityLevel;
+  companyId?: string;
+  location?: string;          // Exact match
+  department?: string;        // Exact match
+  search?: string;            // Case-insensitive title search (contains)
+}
+
+// Pagination metadata
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+// Paginated jobs response
+export interface PaginatedJobsResponse {
+  data: Job[];
+  pagination: PaginationMeta;
+}

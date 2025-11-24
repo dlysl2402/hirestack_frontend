@@ -1,5 +1,6 @@
 import type { PaginationParams } from '@/candidates/candidate.types';
 import type { CompanyListParams } from '@/companies/company.types';
+import type { JobListParams } from '@/jobs/job.types';
 
 /**
  * Query Key Factory
@@ -36,7 +37,7 @@ export const queryKeys = {
   jobs: {
     all: ['jobs'] as const,
     lists: () => [...queryKeys.jobs.all, 'list'] as const,
-    list: (params?: Record<string, any>) => [...queryKeys.jobs.lists(), params] as const,
+    list: (params?: JobListParams) => [...queryKeys.jobs.lists(), params] as const,
     details: () => [...queryKeys.jobs.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.jobs.details(), id] as const,
   },
