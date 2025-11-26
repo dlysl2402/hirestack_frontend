@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getAllCandidates, getCandidateById } from '@/candidates/candidate.service';
+import { getAllCandidates } from '@/candidates/candidate.service';
 import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, CandidateListItem } from '@/candidates/candidate.types';
 import { formatLocation } from '@/candidates/candidate.utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,25 +16,16 @@ import {
 import { PaginationControls } from '@/components/ui/pagination';
 import { Loader2, Plus, Upload } from 'lucide-react';
 import { usePaginatedQuery } from '@/hooks/usePaginatedQuery';
-import { useHoverPrefetch } from '@/hooks/useHoverPrefetch';
 import { queryKeys } from '@/lib/query-keys';
 
-/**
- * CandidateRow component with hover prefetch
- */
 function CandidateRow({ candidate }: { candidate: CandidateListItem }) {
-  const hoverHandlers = useHoverPrefetch({
-    queryKey: queryKeys.candidates.detail(candidate.id),
-    queryFn: () => getCandidateById(candidate.id),
-  });
-
   const location = formatLocation(
     candidate.locationCity ?? undefined,
     candidate.locationCountry ?? undefined
   );
 
   return (
-    <TableRow key={candidate.id} {...hoverHandlers}>
+    <TableRow key={candidate.id}>
       <TableCell className="font-medium">
         {candidate.firstName} {candidate.lastName}
       </TableCell>
@@ -85,13 +76,9 @@ export default function Candidates() {
     [page, limit, sortBy, sortOrder]
   );
 
-  // Use paginated query with automatic prefetching
-  const { data, isLoading, error } = usePaginatedQuery<PaginatedResponse<CandidateListItem>, PaginationParams>({
+  const { data, isLoading, error } = usePaginatedQuery<PaginatedResponse<CandidateListItem>>({
     queryKey: queryKeys.candidates.list(paginationParams),
     queryFn: () => getAllCandidates(paginationParams),
-    queryFnGenerator: (params: PaginationParams) => () => getAllCandidates(params),
-    page,
-    getTotalPages: (data) => data?.pagination?.totalPages ?? 0,
   });
 
   const candidates = data?.data ?? [];

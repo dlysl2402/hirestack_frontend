@@ -83,7 +83,6 @@ export default function JobDetail() {
     queryKey: queryKeys.companies.detail(job?.companyId || ''),
     queryFn: () => getCompanyById(job!.companyId),
     enabled: !!job?.companyId,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   // Delete handler

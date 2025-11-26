@@ -151,7 +151,6 @@ export default function Jobs() {
   const { data: companiesData, isLoading: companiesLoading } = useQuery({
     queryKey: queryKeys.companies.list({ limit: 1000 }),
     queryFn: () => getCompanies({ limit: 1000 }),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   // Create company lookup map
