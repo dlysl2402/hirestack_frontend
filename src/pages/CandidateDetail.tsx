@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCandidateById, deleteCandidate } from '@/candidates/candidate.service';
-import { selectBestProfile, getSourceBadge } from '@/candidates/candidate.utils';
+import { getSourceBadge } from '@/candidates/candidate.utils';
 import { queryKeys } from '@/lib/query-keys';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -92,8 +92,9 @@ export default function CandidateDetail() {
     return null;
   }
 
-  // Select best profile (Resume > LinkedIn > Manual)
-  const { profile, source } = selectBestProfile(candidate);
+  // Profile is now provided directly by the API with priority: RESUME > LINKEDIN > MANUAL
+  const profile = candidate.profile;
+  const source = profile?.source ?? null;
   const sourceBadge = source ? getSourceBadge(source) : null;
 
   return (

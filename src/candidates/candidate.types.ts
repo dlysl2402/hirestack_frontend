@@ -96,9 +96,21 @@ export interface CandidateProfile {
   projects: Project[];
 }
 
+// Candidate list item (from GET /api/candidates)
+export interface CandidateListItem {
+  id: string;
+  firstName: string;
+  lastName: string;
+  updatedAt: string;
+  currentTitle: string | null;
+  currentCompanyName: string | null;
+  locationCity: string | null;
+  locationCountry: string | null;
+}
+
+// Candidate detail (from GET /api/candidates/:id)
 export interface Candidate {
   id: string;
-  organizationId: string;
   firstName: string;
   lastName: string;
   email: string[];
@@ -106,10 +118,10 @@ export interface Candidate {
   jobFunctionTags: string[];
   createdAt: string;
   updatedAt: string;
-  // Flattened profiles by source
-  linkedinProfile: CandidateProfile | null;
-  resumeProfile: CandidateProfile | null;
-  manualProfile: CandidateProfile | null;
+  // Single profile with priority: RESUME > LINKEDIN > MANUAL
+  profile: CandidateProfile | null;
+  // Available profile sources
+  availableProfiles: ProfileSource[];
 }
 
 export interface CreateCandidateData {
@@ -162,7 +174,13 @@ export interface LinkedInImportResults {
 export type SortBy = 'createdAt' | 'firstName' | 'lastName' | 'updatedAt';
 export type SortOrder = 'asc' | 'desc';
 
-export interface PaginationParams {
+export interface CandidateFilterParams {
+  currentTitle?: string;
+  currentCompanyName?: string;
+  locationCountry?: string;
+}
+
+export interface PaginationParams extends CandidateFilterParams {
   page?: number;
   limit?: number;
   sortBy?: SortBy;

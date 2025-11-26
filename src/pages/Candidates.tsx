@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getAllCandidates, getCandidateById } from '@/candidates/candidate.service';
-import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, Candidate } from '@/candidates/candidate.types';
+import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, CandidateListItem } from '@/candidates/candidate.types';
+import { formatLocation } from '@/candidates/candidate.utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -22,11 +22,16 @@ import { queryKeys } from '@/lib/query-keys';
 /**
  * CandidateRow component with hover prefetch
  */
-function CandidateRow({ candidate }: { candidate: Candidate }) {
+function CandidateRow({ candidate }: { candidate: CandidateListItem }) {
   const hoverHandlers = useHoverPrefetch({
     queryKey: queryKeys.candidates.detail(candidate.id),
     queryFn: () => getCandidateById(candidate.id),
   });
+
+  const location = formatLocation(
+    candidate.locationCity ?? undefined,
+    candidate.locationCountry ?? undefined
+  );
 
   return (
     <TableRow key={candidate.id} {...hoverHandlers}>
@@ -34,40 +39,22 @@ function CandidateRow({ candidate }: { candidate: Candidate }) {
         {candidate.firstName} {candidate.lastName}
       </TableCell>
       <TableCell>
-        {candidate.email.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            {candidate.email.map((email, index) => (
-              <span key={index} className="text-sm">
-                {email}
-              </span>
-            ))}
-          </div>
+        {candidate.currentTitle ? (
+          <span className="text-sm">{candidate.currentTitle}</span>
         ) : (
           <span className="text-muted-foreground text-sm">—</span>
         )}
       </TableCell>
       <TableCell>
-        {candidate.phone.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            {candidate.phone.map((phone, index) => (
-              <span key={index} className="text-sm">
-                {phone}
-              </span>
-            ))}
-          </div>
+        {candidate.currentCompanyName ? (
+          <span className="text-sm">{candidate.currentCompanyName}</span>
         ) : (
           <span className="text-muted-foreground text-sm">—</span>
         )}
       </TableCell>
       <TableCell>
-        {candidate.jobFunctionTags.length > 0 ? (
-          <div className="flex flex-wrap gap-1">
-            {candidate.jobFunctionTags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+        {location ? (
+          <span className="text-sm">{location}</span>
         ) : (
           <span className="text-muted-foreground text-sm">—</span>
         )}
@@ -99,7 +86,7 @@ export default function Candidates() {
   );
 
   // Use paginated query with automatic prefetching
-  const { data, isLoading, error } = usePaginatedQuery<PaginatedResponse<Candidate>, PaginationParams>({
+  const { data, isLoading, error } = usePaginatedQuery<PaginatedResponse<CandidateListItem>, PaginationParams>({
     queryKey: queryKeys.candidates.list(paginationParams),
     queryFn: () => getAllCandidates(paginationParams),
     queryFnGenerator: (params: PaginationParams) => () => getAllCandidates(params),
@@ -224,9 +211,9 @@ export default function Candidates() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Job Functions</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Company</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>

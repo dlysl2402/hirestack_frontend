@@ -1,23 +1,4 @@
-import type { Candidate, CandidateProfile, ProfileSource } from './candidate.types';
-
-/**
- * Select the best profile to display based on priority: Resume > LinkedIn > Manual
- */
-export function selectBestProfile(candidate: Candidate): {
-  profile: CandidateProfile | null;
-  source: ProfileSource | null;
-} {
-  if (candidate.resumeProfile) {
-    return { profile: candidate.resumeProfile, source: 'RESUME' };
-  }
-  if (candidate.linkedinProfile) {
-    return { profile: candidate.linkedinProfile, source: 'LINKEDIN' };
-  }
-  if (candidate.manualProfile) {
-    return { profile: candidate.manualProfile, source: 'MANUAL' };
-  }
-  return { profile: null, source: null };
-}
+import type { ProfileSource } from './candidate.types';
 
 /**
  * Get display label and variant for profile source
