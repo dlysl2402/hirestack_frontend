@@ -149,8 +149,8 @@ export default function Jobs() {
 
   // Fetch companies for name lookup
   const { data: companiesData, isLoading: companiesLoading } = useQuery({
-    queryKey: queryKeys.companies.list({ limit: 1000 }),
-    queryFn: () => getCompanies({ limit: 1000 }),
+    queryKey: queryKeys.companies.list({ limit: 20 }),
+    queryFn: () => getCompanies({ limit: 20 }),
   });
 
   // Create company lookup map

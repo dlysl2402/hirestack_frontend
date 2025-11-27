@@ -27,8 +27,8 @@ export default function JobCreate() {
 
   // Fetch companies for selector
   const { data: companiesData, isLoading: companiesLoading } = useQuery({
-    queryKey: queryKeys.companies.list({ page: 1, limit: 1000 }),
-    queryFn: () => getCompanies({ page: 1, limit: 1000 }),
+    queryKey: queryKeys.companies.list({ page: 1, limit: 20 }),
+    queryFn: () => getCompanies({ page: 1, limit: 20 }),
   });
 
   const companies = companiesData?.data ?? [];
