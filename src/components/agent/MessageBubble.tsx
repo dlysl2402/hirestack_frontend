@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { DisplayMessage } from '@/agent/agent.types';
 import { ToolCallDisplay } from './ToolCallDisplay';
+import ReactMarkdown from 'react-markdown';
 
 interface MessageBubbleProps {
   message: DisplayMessage;
@@ -26,7 +27,13 @@ export function MessageBubble({ message, showToolCalls = true }: MessageBubblePr
           message.isOptimistic && 'opacity-70'
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        {isUser ? (
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        ) : (
+          <div className="prose prose-sm prose-agent max-w-none break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
+        )}
 
         {showToolCalls && message.toolCalls && message.toolCalls.length > 0 && (
           <div className="mt-3 border-t border-border/50 pt-3">

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* Sophisticated Monochrome Palette - Linear/Vercel inspired */
@@ -40,4 +41,16 @@
   --color-ring: oklch(28% 0.015 240);                /* Dark slate focus ring */
 
   --radius: 0.125rem;                                 /* 2px - sharp, minimal */
+}
+
+/* Custom prose styles for agent chat - matches monochrome theme */
+.prose-agent {
+  --tw-prose-body: oklch(15% 0.01 240);
+  --tw-prose-headings: oklch(15% 0.01 240);
+  --tw-prose-bold: oklch(15% 0.01 240);
+  --tw-prose-links: oklch(28% 0.015 240);
+  --tw-prose-code: oklch(15% 0.01 240);
+  --tw-prose-hr: oklch(88% 0.005 60);
+  --tw-prose-bullets: oklch(52% 0.005 60);
+  --tw-prose-counters: oklch(52% 0.005 60);
 }
