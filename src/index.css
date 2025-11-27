@@ -53,4 +53,31 @@
   --tw-prose-hr: oklch(88% 0.005 60);
   --tw-prose-bullets: oklch(52% 0.005 60);
   --tw-prose-counters: oklch(52% 0.005 60);
+  --tw-prose-th-borders: oklch(75% 0.005 60);
+  --tw-prose-td-borders: oklch(88% 0.005 60);
+}
+
+/* Table styles for agent chat */
+.prose-agent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+}
+
+.prose-agent th,
+.prose-agent td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: 1px solid oklch(88% 0.005 60);
+}
+
+.prose-agent th {
+  background-color: oklch(95% 0.005 60);
+  font-weight: 600;
+  border-bottom: 2px solid oklch(75% 0.005 60);
+}
+
+.prose-agent tr:nth-child(even) {
+  background-color: oklch(97% 0.003 60);
 }

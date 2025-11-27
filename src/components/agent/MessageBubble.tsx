@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import type { DisplayMessage } from '@/agent/agent.types';
 import { ToolCallDisplay } from './ToolCallDisplay';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface MessageBubbleProps {
   message: DisplayMessage;
@@ -31,7 +32,7 @@ export function MessageBubble({ message, showToolCalls = true }: MessageBubblePr
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
         ) : (
           <div className="prose prose-sm prose-agent max-w-none break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
           </div>
         )}
 
