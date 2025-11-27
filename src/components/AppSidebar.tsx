@@ -11,6 +11,7 @@ import {
   DownloadIcon,
   DesktopIcon,
   FileTextIcon,
+  RocketIcon,
 } from '@radix-ui/react-icons';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import type { IconProps } from '@radix-ui/react-icons/dist/types';
@@ -54,6 +55,12 @@ const navigation: NavigationSection[] = [
     items: [
       { name: 'All Jobs', href: '/jobs', icon: FileTextIcon },
       { name: 'Create Job', href: '/jobs/create', icon: PlusIcon },
+    ],
+  },
+  {
+    title: 'AI Assistant',
+    items: [
+      { name: 'Headhunter', href: '/agent', icon: RocketIcon },
     ],
   },
   {

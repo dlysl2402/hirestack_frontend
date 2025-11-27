@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getAllCandidates } from '@/candidates/candidate.service';
-import type { SortBy, SortOrder, PaginationParams, PaginatedResponse, CandidateListItem } from '@/candidates/candidate.types';
+import type { SortBy, SortOrder, PaginatedResponse, CandidateListItem } from '@/candidates/candidate.types';
 import { formatLocation } from '@/candidates/candidate.utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

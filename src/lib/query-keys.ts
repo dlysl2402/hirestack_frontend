@@ -42,7 +42,12 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.jobs.details(), id] as const,
   },
 
-  // Add more resource types here as needed
-  // dashboard: { ... },
-  // stats: { ... },
+  // Agent query keys
+  agent: {
+    all: ['agent'] as const,
+    sessions: () => [...queryKeys.agent.all, 'sessions'] as const,
+    sessionList: (params?: { limit?: number; offset?: number }) =>
+      [...queryKeys.agent.sessions(), 'list', params] as const,
+    session: (id: string) => [...queryKeys.agent.sessions(), id] as const,
+  },
 };

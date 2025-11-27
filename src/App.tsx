@@ -20,6 +20,7 @@ import Jobs from '@/pages/Jobs';
 import JobCreate from '@/pages/JobCreate';
 import JobEdit from '@/pages/JobEdit';
 import JobDetail from '@/pages/JobDetail';
+import Agent from '@/pages/Agent';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                     <Route path="/jobs/create" element={<JobCreate />} />
                     <Route path="/jobs/:id/edit" element={<JobEdit />} />
                     <Route path="/jobs/:id" element={<JobDetail />} />
+                    <Route path="/agent" element={<Agent />} />
                     <Route path="/organizations" element={<div className="p-8"><h1 className="text-2xl font-bold">Organizations - Coming Soon</h1></div>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
