@@ -199,14 +199,14 @@ export default function CandidateDetail() {
                 </div>
               )}
 
-              {/* Job Function Tags */}
-              {candidate.jobFunctionTags.length > 0 && (
+              {/* Role Archetypes */}
+              {candidate.roleArchetypes.length > 0 && (
                 <div>
                   <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Job Functions
+                    Role Archetypes
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {candidate.jobFunctionTags.map((tag, index) => (
+                    {candidate.roleArchetypes.map((tag, index) => (
                       <Badge key={index} variant="secondary">
                         {tag}
                       </Badge>
@@ -216,9 +216,9 @@ export default function CandidateDetail() {
               )}
 
               {/* Empty State */}
-              {candidate.email.length === 0 && candidate.phone.length === 0 && candidate.jobFunctionTags.length === 0 && (
+              {candidate.email.length === 0 && candidate.phone.length === 0 && candidate.roleArchetypes.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground text-sm">
-                  No contact information or job functions specified
+                  No contact information or role archetypes specified
                 </div>
               )}
             </CardContent>

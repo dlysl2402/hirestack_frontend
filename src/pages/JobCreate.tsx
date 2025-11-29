@@ -15,9 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, ArrowLeft, Loader2, Plus, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, X } from 'lucide-react';
 import { createJob } from '@/jobs/job.service';
 import { getCompanies } from '@/companies/company.service';
+import { useEnums } from '@/config/useEnums';
 import type { CreateJobData, JobStatus, SeniorityLevel } from '@/jobs/job.types';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -33,6 +34,9 @@ export default function JobCreate() {
 
   const companies = companiesData?.data ?? [];
 
+  // Fetch enums for dropdowns
+  const { data: enums, isLoading: enumsLoading } = useEnums();
+
   // Form state
   const [companyId, setCompanyId] = useState('');
   const [title, setTitle] = useState('');
@@ -44,43 +48,17 @@ export default function JobCreate() {
   const [status, setStatus] = useState<JobStatus>('OPEN');
   const [preferredSkills, setPreferredSkills] = useState('');
   const [teamDescription, setTeamDescription] = useState('');
-  const [requiredCandidateTags, setRequiredCandidateTags] = useState<string[]>([]);
-  const [currentTag, setCurrentTag] = useState('');
+  const [requiredRoleArchetypes, setRequiredRoleArchetypes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Seniority level options
-  const seniorityOptions: { value: SeniorityLevel; label: string }[] = [
-    { value: 'JUNIOR', label: 'Junior' },
-    { value: 'MID_LEVEL', label: 'Mid-Level' },
-    { value: 'SENIOR', label: 'Senior' },
-  ];
+  // Derive options from enums (with fallback)
+  const seniorityOptions = enums?.seniorityLevel ?? [];
+  const statusOptions = enums?.jobStatus ?? [];
+  const roleArchetypeOptions = enums?.roleArchetypes ?? [];
 
-  // Status options
-  const statusOptions: { value: JobStatus; label: string }[] = [
-    { value: 'OPEN', label: 'Open' },
-    { value: 'OFFERED', label: 'Offered' },
-    { value: 'CLOSED', label: 'Closed' },
-  ];
-
-  // Tag management
-  const handleAddTag = () => {
-    const trimmed = currentTag.trim();
-    if (trimmed && !requiredCandidateTags.includes(trimmed)) {
-      setRequiredCandidateTags([...requiredCandidateTags, trimmed]);
-      setCurrentTag('');
-    }
-  };
-
-  const handleRemoveTag = (index: number) => {
-    setRequiredCandidateTags(requiredCandidateTags.filter((_, i) => i !== index));
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
+  const handleRemoveArchetype = (index: number) => {
+    setRequiredRoleArchetypes(requiredRoleArchetypes.filter((_, i) => i !== index));
   };
 
   // Form submission
@@ -143,7 +121,7 @@ export default function JobCreate() {
         status,
         ...(preferredSkills.trim() && { preferredSkills: preferredSkills.trim() }),
         ...(teamDescription.trim() && { teamDescription: teamDescription.trim() }),
-        ...(requiredCandidateTags.length > 0 && { requiredCandidateTags }),
+        ...(requiredRoleArchetypes.length > 0 && { requiredRoleArchetypes }),
       };
 
       const newJob = await createJob(payload);
@@ -300,35 +278,49 @@ export default function JobCreate() {
               <Label htmlFor="seniorityLevel">
                 Seniority Level <span className="text-destructive">*</span>
               </Label>
-              <Select value={seniorityLevel} onValueChange={(value) => setSeniorityLevel(value as SeniorityLevel)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select seniority level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {seniorityOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {enumsLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading options...
+                </div>
+              ) : (
+                <Select value={seniorityLevel} onValueChange={(value) => setSeniorityLevel(value as SeniorityLevel)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select seniority level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {seniorityOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.displayName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Status - Optional */}
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={status} onValueChange={(value) => setStatus(value as JobStatus)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {enumsLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading options...
+                </div>
+              ) : (
+                <Select value={status} onValueChange={(value) => setStatus(value as JobStatus)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.displayName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <p className="text-sm text-muted-foreground">
                 Default is Open
               </p>
@@ -388,47 +380,61 @@ export default function JobCreate() {
               />
             </div>
 
-            {/* Required Candidate Tags - Optional */}
+            {/* Required Role Archetypes - Optional */}
             <div className="space-y-2">
-              <Label htmlFor="candidateTags">Required Candidate Tags</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="candidateTags"
-                  value={currentTag}
-                  onChange={(e) => setCurrentTag(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
-                  placeholder="e.g., backend_engineer"
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddTag}
-                  variant="outline"
-                  size="icon"
+              <Label htmlFor="roleArchetypes">Required Role Archetypes</Label>
+              {enumsLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading options...
+                </div>
+              ) : (
+                <Select
+                  value=""
+                  onValueChange={(value) => {
+                    if (value && !requiredRoleArchetypes.includes(value)) {
+                      setRequiredRoleArchetypes([...requiredRoleArchetypes, value]);
+                    }
+                  }}
                 >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role archetypes to add" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roleArchetypeOptions
+                      .filter((option) => !requiredRoleArchetypes.includes(option.value))
+                      .map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.displayName}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
 
-              {/* Display tags as badges */}
-              {requiredCandidateTags.length > 0 && (
+              {/* Display selected archetypes as badges */}
+              {requiredRoleArchetypes.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {requiredCandidateTags.map((tag, idx) => (
-                    <Badge key={idx} variant="secondary" className="gap-1">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(idx)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                  {requiredRoleArchetypes.map((archetype, idx) => {
+                    const displayName = roleArchetypeOptions.find((o) => o.value === archetype)?.displayName ?? archetype;
+                    return (
+                      <Badge key={idx} variant="secondary" className="gap-1">
+                        {displayName}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArchetype(idx)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    );
+                  })}
                 </div>
               )}
 
               <p className="text-sm text-muted-foreground">
-                Tags to filter candidate matches. Press Enter or click + to add.
+                Select role archetypes to filter candidate matches.
               </p>
             </div>
 

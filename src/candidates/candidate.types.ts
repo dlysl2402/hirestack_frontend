@@ -115,7 +115,7 @@ export interface Candidate {
   lastName: string;
   email: string[];
   phone: string[];
-  jobFunctionTags: string[];
+  roleArchetypes: string[];
   createdAt: string;
   updatedAt: string;
   // Single profile with priority: RESUME > LINKEDIN > MANUAL
@@ -129,7 +129,7 @@ export interface CreateCandidateData {
   lastName: string;
   email?: string[];
   phone?: string[];
-  jobFunctionTags?: string[];
+  roleArchetypes?: string[];
 }
 
 export interface UpdateCandidateData {
@@ -137,7 +137,7 @@ export interface UpdateCandidateData {
   lastName?: string;
   email?: string[];
   phone?: string[];
-  jobFunctionTags?: string[];
+  roleArchetypes?: string[];
 }
 
 // LinkedIn Import types

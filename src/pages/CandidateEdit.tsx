@@ -1,23 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getCandidateById, updateCandidate } from '@/candidates/candidate.service';
+import { useEnums } from '@/config/useEnums';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, X, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function CandidateEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  // Fetch enums for dropdowns
+  const { data: enums, isLoading: enumsLoading } = useEnums();
+  const roleArchetypeOptions = enums?.roleArchetypes ?? [];
+
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emails, setEmails] = useState<string[]>(['']);
   const [phones, setPhones] = useState<string[]>(['']);
-  const [jobFunctionTags, setJobFunctionTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
+  const [roleArchetypes, setRoleArchetypes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +50,7 @@ export default function CandidateEdit() {
         setLastName(candidate.lastName);
         setEmails(candidate.email.length > 0 ? candidate.email : ['']);
         setPhones(candidate.phone.length > 0 ? candidate.phone : ['']);
-        setJobFunctionTags(candidate.jobFunctionTags || []);
+        setRoleArchetypes(candidate.roleArchetypes || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load candidate');
       } finally {
@@ -79,23 +91,8 @@ export default function CandidateEdit() {
     setPhones(newPhones);
   };
 
-  // Tag handlers
-  const handleAddTag = () => {
-    if (tagInput.trim() && !jobFunctionTags.includes(tagInput.trim())) {
-      setJobFunctionTags([...jobFunctionTags, tagInput.trim()]);
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setJobFunctionTags(jobFunctionTags.filter((t) => t !== tag));
-  };
-
-  const handleTagInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
+  const handleRemoveArchetype = (archetype: string) => {
+    setRoleArchetypes(roleArchetypes.filter((a) => a !== archetype));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,7 +119,7 @@ export default function CandidateEdit() {
         lastName: lastName.trim(),
         email: filteredEmails.length > 0 ? filteredEmails : undefined,
         phone: filteredPhones.length > 0 ? filteredPhones : undefined,
-        jobFunctionTags: jobFunctionTags.length > 0 ? jobFunctionTags : undefined,
+        roleArchetypes: roleArchetypes.length > 0 ? roleArchetypes : undefined,
       });
 
       // Navigate back to detail page
@@ -315,46 +312,56 @@ export default function CandidateEdit() {
                 </div>
               </div>
 
-              {/* Job Function Tags */}
+              {/* Role Archetypes */}
               <div className="space-y-2">
-                <Label htmlFor="tagInput">Job Function Tags</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="tagInput"
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={handleTagInputKeyDown}
-                    placeholder="e.g., Software Engineer, Full Stack"
+                <Label htmlFor="roleArchetypes">Role Archetypes</Label>
+                {enumsLoading ? (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading options...
+                  </div>
+                ) : (
+                  <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (value && !roleArchetypes.includes(value)) {
+                        setRoleArchetypes([...roleArchetypes, value]);
+                      }
+                    }}
                     disabled={isSubmitting}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleAddTag}
-                    disabled={isSubmitting || !tagInput.trim()}
                   >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                {jobFunctionTags.length > 0 && (
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role archetypes to add" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roleArchetypeOptions
+                        .filter((option) => !roleArchetypes.includes(option.value))
+                        .map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.displayName}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {roleArchetypes.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {jobFunctionTags.map((tag) => (
-                      <div
-                        key={tag}
-                        className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 text-sm font-medium text-primary"
-                      >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          disabled={isSubmitting}
-                          className="ml-1 hover:text-primary/80"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
+                    {roleArchetypes.map((archetype) => {
+                      const displayName = roleArchetypeOptions.find((o) => o.value === archetype)?.displayName ?? archetype;
+                      return (
+                        <Badge key={archetype} variant="secondary" className="gap-1">
+                          {displayName}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveArchetype(archetype)}
+                            disabled={isSubmitting}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      );
+                    })}
                   </div>
                 )}
               </div>

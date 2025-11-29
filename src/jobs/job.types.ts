@@ -18,7 +18,7 @@ export interface Job {
   preferredSkills: string | null;
   seniorityLevel: SeniorityLevel;
   teamDescription: string | null;
-  requiredCandidateTags: string[];
+  requiredRoleArchetypes: string[];
   interpretation: string | null;
   interpretedAt: string | null;
   createdAt: string;
@@ -37,7 +37,7 @@ export interface CreateJobData {
   status?: JobStatus;
   preferredSkills?: string;
   teamDescription?: string;
-  requiredCandidateTags?: string[];
+  requiredRoleArchetypes?: string[];
 }
 
 // Update job data (API request) - all fields optional
@@ -52,7 +52,7 @@ export interface UpdateJobData {
   preferredSkills?: string | null;  // String or null to clear
   seniorityLevel?: SeniorityLevel;
   teamDescription?: string | null;  // String or null to clear
-  requiredCandidateTags?: string[];  // Replaces entire array
+  requiredRoleArchetypes?: string[];  // Replaces entire array
 }
 
 // Job list query parameters (pagination + sorting + filters)

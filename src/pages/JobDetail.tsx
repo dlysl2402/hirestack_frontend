@@ -320,19 +320,19 @@ export default function JobDetail() {
                 </p>
               </div>
 
-              {/* Required Candidate Tags */}
+              {/* Required Role Archetypes */}
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Required Candidate Tags</p>
-                {job.requiredCandidateTags.length > 0 ? (
+                <p className="text-sm font-medium text-muted-foreground mb-2">Required Role Archetypes</p>
+                {job.requiredRoleArchetypes.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {job.requiredCandidateTags.map((tag, idx) => (
+                    {job.requiredRoleArchetypes.map((tag, idx) => (
                       <Badge key={idx} variant="secondary">
                         {tag}
                       </Badge>
                     ))}
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">No tags specified</span>
+                  <span className="text-muted-foreground">No role archetypes specified</span>
                 )}
               </div>
             </CardContent>

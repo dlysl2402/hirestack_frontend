@@ -50,4 +50,10 @@ export const queryKeys = {
       [...queryKeys.agent.sessions(), 'list', params] as const,
     session: (id: string) => [...queryKeys.agent.sessions(), id] as const,
   },
+
+  // Config/Enums query keys
+  config: {
+    all: ['config'] as const,
+    enums: () => [...queryKeys.config.all, 'enums'] as const,
+  },
 };
