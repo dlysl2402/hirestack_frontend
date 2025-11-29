@@ -6,14 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SearchableMultiSelect } from '@/components/ui/searchable-multi-select';
 import { Plus, X, Loader2, AlertCircle } from 'lucide-react';
 
 export default function CandidateCreate() {
@@ -61,9 +54,6 @@ export default function CandidateCreate() {
     setPhones(newPhones);
   };
 
-  const handleRemoveArchetype = (archetype: string) => {
-    setRoleArchetypes(roleArchetypes.filter((a) => a !== archetype));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,48 +241,15 @@ export default function CandidateCreate() {
                     Loading options...
                   </div>
                 ) : (
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      if (value && !roleArchetypes.includes(value)) {
-                        setRoleArchetypes([...roleArchetypes, value]);
-                      }
-                    }}
+                  <SearchableMultiSelect
+                    options={roleArchetypeOptions}
+                    values={roleArchetypes}
+                    onValuesChange={setRoleArchetypes}
+                    placeholder="Search role archetypes..."
+                    searchPlaceholder="Type to search..."
+                    emptyMessage="No role archetypes found."
                     disabled={isSubmitting}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select role archetypes to add" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roleArchetypeOptions
-                        .filter((option) => !roleArchetypes.includes(option.value))
-                        .map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.displayName}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                {roleArchetypes.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {roleArchetypes.map((archetype) => {
-                      const displayName = roleArchetypeOptions.find((o) => o.value === archetype)?.displayName ?? archetype;
-                      return (
-                        <Badge key={archetype} variant="secondary" className="gap-1">
-                          {displayName}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveArchetype(archetype)}
-                            disabled={isSubmitting}
-                            className="ml-1 hover:text-destructive"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      );
-                    })}
-                  </div>
+                  />
                 )}
               </div>
 

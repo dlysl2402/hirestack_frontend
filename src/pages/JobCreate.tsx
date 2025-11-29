@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -15,7 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, ArrowLeft, Loader2, X } from 'lucide-react';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+import { SearchableMultiSelect } from '@/components/ui/searchable-multi-select';
+import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { createJob } from '@/jobs/job.service';
 import { getCompanies } from '@/companies/company.service';
 import { useEnums } from '@/config/useEnums';
@@ -56,10 +57,6 @@ export default function JobCreate() {
   const seniorityOptions = enums?.seniorityLevel ?? [];
   const statusOptions = enums?.jobStatus ?? [];
   const roleArchetypeOptions = enums?.roleArchetypes ?? [];
-
-  const handleRemoveArchetype = (index: number) => {
-    setRequiredRoleArchetypes(requiredRoleArchetypes.filter((_, i) => i !== index));
-  };
 
   // Form submission
   const handleSubmit = async (e: FormEvent) => {
@@ -284,18 +281,14 @@ export default function JobCreate() {
                   Loading options...
                 </div>
               ) : (
-                <Select value={seniorityLevel} onValueChange={(value) => setSeniorityLevel(value as SeniorityLevel)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select seniority level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {seniorityOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.displayName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={seniorityOptions}
+                  value={seniorityLevel}
+                  onValueChange={(value) => setSeniorityLevel(value as SeniorityLevel)}
+                  placeholder="Select seniority level..."
+                  searchPlaceholder="Search levels..."
+                  emptyMessage="No levels found."
+                />
               )}
             </div>
 
@@ -308,18 +301,14 @@ export default function JobCreate() {
                   Loading options...
                 </div>
               ) : (
-                <Select value={status} onValueChange={(value) => setStatus(value as JobStatus)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.displayName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={statusOptions}
+                  value={status}
+                  onValueChange={(value) => setStatus(value as JobStatus)}
+                  placeholder="Select status..."
+                  searchPlaceholder="Search statuses..."
+                  emptyMessage="No statuses found."
+                />
               )}
               <p className="text-sm text-muted-foreground">
                 Default is Open
@@ -389,50 +378,15 @@ export default function JobCreate() {
                   Loading options...
                 </div>
               ) : (
-                <Select
-                  value=""
-                  onValueChange={(value) => {
-                    if (value && !requiredRoleArchetypes.includes(value)) {
-                      setRequiredRoleArchetypes([...requiredRoleArchetypes, value]);
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role archetypes to add" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roleArchetypeOptions
-                      .filter((option) => !requiredRoleArchetypes.includes(option.value))
-                      .map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.displayName}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+                <SearchableMultiSelect
+                  options={roleArchetypeOptions}
+                  values={requiredRoleArchetypes}
+                  onValuesChange={setRequiredRoleArchetypes}
+                  placeholder="Search role archetypes..."
+                  searchPlaceholder="Type to search..."
+                  emptyMessage="No role archetypes found."
+                />
               )}
-
-              {/* Display selected archetypes as badges */}
-              {requiredRoleArchetypes.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {requiredRoleArchetypes.map((archetype, idx) => {
-                    const displayName = roleArchetypeOptions.find((o) => o.value === archetype)?.displayName ?? archetype;
-                    return (
-                      <Badge key={idx} variant="secondary" className="gap-1">
-                        {displayName}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveArchetype(idx)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    );
-                  })}
-                </div>
-              )}
-
               <p className="text-sm text-muted-foreground">
                 Select role archetypes to filter candidate matches.
               </p>
