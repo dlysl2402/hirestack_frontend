@@ -2,24 +2,12 @@ import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import {
-  PersonIcon,
-  GlobeIcon,
-  ReaderIcon,
-  ExitIcon,
-  PlusIcon,
-  DownloadIcon,
-  DesktopIcon,
-  FileTextIcon,
-  RocketIcon,
-} from '@radix-ui/react-icons';
-import type { ForwardRefExoticComponent, RefAttributes } from 'react';
-import type { IconProps } from '@radix-ui/react-icons/dist/types';
+import { ExitIcon } from '@radix-ui/react-icons';
+import { PanelLeft } from 'lucide-react';
 
 type NavigationItem = {
   name: string;
   href: string;
-  icon: ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
   badge?: string;
 };
 
@@ -31,43 +19,37 @@ type NavigationSection = {
 const navigation: NavigationSection[] = [
   {
     title: 'Overview',
-    items: [
-      { name: 'Dashboard', href: '/', icon: ReaderIcon },
-    ],
+    items: [{ name: 'Dashboard', href: '/' }],
   },
   {
     title: 'Candidates',
     items: [
-      { name: 'All Candidates', href: '/candidates', icon: PersonIcon },
-      { name: 'Create Candidate', href: '/candidates/create', icon: PlusIcon },
-      { name: 'Import from LinkedIn', href: '/candidates/import', icon: DownloadIcon },
+      { name: 'All Candidates', href: '/candidates' },
+      { name: 'Create Candidate', href: '/candidates/create' },
+      { name: 'Import from LinkedIn', href: '/candidates/import' },
     ],
   },
   {
     title: 'Companies',
     items: [
-      { name: 'All Companies', href: '/companies', icon: DesktopIcon },
-      { name: 'Create Company', href: '/companies/create', icon: PlusIcon },
+      { name: 'All Companies', href: '/companies' },
+      { name: 'Create Company', href: '/companies/create' },
     ],
   },
   {
     title: 'Jobs',
     items: [
-      { name: 'All Jobs', href: '/jobs', icon: FileTextIcon },
-      { name: 'Create Job', href: '/jobs/create', icon: PlusIcon },
+      { name: 'All Jobs', href: '/jobs' },
+      { name: 'Create Job', href: '/jobs/create' },
     ],
   },
   {
     title: 'AI Assistant',
-    items: [
-      { name: 'Headhunter', href: '/agent', icon: RocketIcon },
-    ],
+    items: [{ name: 'Headhunter', href: '/agent' }],
   },
   {
     title: 'Settings',
-    items: [
-      { name: 'Organizations', href: '/organizations', icon: GlobeIcon, badge: 'Soon' },
-    ],
+    items: [{ name: 'Organizations', href: '/organizations', badge: 'Soon' }],
   },
 ];
 
@@ -75,16 +57,54 @@ interface AppSidebarProps {
   onLogout: () => void;
   userName?: string;
   organizationName?: string;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-export const AppSidebar = React.memo(function AppSidebar({ onLogout, userName, organizationName }: AppSidebarProps) {
+export const AppSidebar = React.memo(function AppSidebar({
+  onLogout,
+  userName,
+  organizationName,
+  isCollapsed,
+  onToggleCollapse,
+}: AppSidebarProps) {
   const location = useLocation();
+
+  // Collapsed state: show expand button at top and logout at bottom
+  if (isCollapsed) {
+    return (
+      <div className="flex h-screen w-12 flex-col items-center border-r bg-card py-4">
+        <button
+          onClick={onToggleCollapse}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          aria-label="Expand sidebar"
+        >
+          <PanelLeft className="h-4 w-4" />
+        </button>
+        <div className="flex-1" />
+        <button
+          onClick={onLogout}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          aria-label="Logout"
+        >
+          <ExitIcon className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-card">
       {/* Header */}
-      <div className="flex h-16 items-center border-b px-6">
+      <div className="flex h-16 items-center justify-between border-b px-4">
         <h1 className="text-xl font-bold text-foreground">HireStack</h1>
+        <button
+          onClick={onToggleCollapse}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          aria-label="Collapse sidebar"
+        >
+          <PanelLeft className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -98,20 +118,18 @@ export const AppSidebar = React.memo(function AppSidebar({ onLogout, userName, o
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const isActive = location.pathname === item.href;
-                  const Icon = item.icon;
 
                   return (
                     <Link
                       key={item.name}
                       to={item.href}
                       className={cn(
-                        'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                        'flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                         isActive
                           ? 'bg-primary text-primary-foreground'
                           : 'text-foreground hover:bg-accent hover:text-accent-foreground'
                       )}
                     >
-                      <Icon className="h-4 w-4" />
                       <span className="flex-1">{item.name}</span>
                       {item.badge && (
                         <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
