@@ -63,7 +63,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         {profile.linkedInUrl && (
           <div>
             <a
-              href={profile.linkedInUrl}
+              href={profile.linkedInUrl.startsWith('http') ? profile.linkedInUrl : `https://${profile.linkedInUrl}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:underline inline-flex items-center gap-1"
