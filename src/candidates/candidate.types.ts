@@ -175,6 +175,8 @@ export type SortBy = 'createdAt' | 'firstName' | 'lastName' | 'updatedAt';
 export type SortOrder = 'asc' | 'desc';
 
 export interface CandidateFilterParams {
+  firstName?: string;
+  lastName?: string;
   currentTitle?: string;
   currentCompanyName?: string;
   locationCountry?: string;

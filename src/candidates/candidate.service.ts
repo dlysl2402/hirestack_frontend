@@ -31,7 +31,13 @@ export async function getAllCandidates(params?: PaginationParams): Promise<Pagin
   if (params?.sortOrder) {
     queryParams.append('sortOrder', params.sortOrder);
   }
-  // New filter parameters
+  // Filter parameters
+  if (params?.firstName) {
+    queryParams.append('firstName', params.firstName);
+  }
+  if (params?.lastName) {
+    queryParams.append('lastName', params.lastName);
+  }
   if (params?.currentTitle) {
     queryParams.append('currentTitle', params.currentTitle);
   }
